@@ -1,0 +1,43 @@
+name: Build and Deploy to GitHub Pages with Artifact
+
+on:
+  push:
+    branches:
+      - main # Or whatever branch your source code is on (e.g., master)
+  workflow_dispatch: # Allows manual triggering from the Actions tab
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest # Use the latest Ubuntu runner
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4 # Recommended action for checking out your repo
+
+      - name: Setup Node.js (if your build needs it, e.g., for npm)
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20' # Specify your Node.js version if needed
+
+      - name: Install dependencies (if your build needs it)
+        run: npm ci # Use npm ci for clean installs in CI environments
+
+      - name: Build site (replace with your actual build command)
+        run: npm run build # Example: for React, Vue, Svelte, or other JS frameworks
+
+      # --- Step to upload the built site as an artifact ---
+      - name: Upload production artifacts
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./build # IMPORTANT: Change './build' to the actual directory your build command outputs to
+                        # Common build output directories are:
+                        # - './dist' (Vue, Vite, some others)
+                        # - './build' (React)
+                        # - './_site' (Jekyll)
+                        # - './public' (Hugo)
+                        # - './docs' (if your site is built into a 'docs' folder)
+
+      # --- Step to deploy to GitHub Pages ---
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4 # The official action for deploying to GitHub Pages
